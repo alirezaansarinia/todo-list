@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List</title>
+    <link rel="stylesheet" href="./assets/css/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center mt-4">
+        <div class="col-10 col-md-6">
+          <!-- #region: header -->
+          <header class="d-flex align-items-center">
+            <i class="bi bi-calendar-check fs-3"></i>
+
+            <h3 class="text-secondary ms-2 mb-0">Todo List</h3>
+          </header>
+          <!-- #endregion -->
+
+          <!-- #region: form -->
+          <form id="item-form" class="my-4">
+            <div class="mb-3">
+              <label for="item-input" class="form-label">Enter Item</label>
+
+              <input type="text" id="item-input" class="form-control" />
+
+              <div id="input-invalid" class="form-text text-danger"></div>
+            </div>
+
+            <button type="submit" class="btn btn-sm btn-dark">
+              <i class="bi bi-plus"></i>
+              Add Item
+            </button>
+          </form>
+          <!-- #endregion -->
+
+          <!-- #region: filter -->
+          <div>
+            <input
+              type="text"
+              id="filter"
+              class="form-control form-control-sm"
+              placeholder="Filter Items"
+            />
+          </div>
+          <!-- #endregion -->
+
+          <!-- #region: item-list -->
+          <ul id="item-list" class="my-4 p-0"></ul>
+          <!-- #endregion -->
+
+          <!-- #region: clear all -->
+          <div class="d-grid">
+            <button type="button" id="items-clear" class="btn btn-outline-dark">
+              Clear All
+            </button>
+          </div>
+          <!-- #endregion -->
+        </div>
+      </div>
+    </div>
+
+    <script src="./assets/js/script.js"></script>
+  </body>
+</html>
