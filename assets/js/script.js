@@ -1,194 +1,178 @@
 //#region : variables
-
 const itemForm = document.querySelector("#item-form");
-const itemInput = document.querySelector("#item-input");
-const inputInvalid = document.querySelector("#input-invalid");
+const itemInput = itemForm.querySelector("#item-input");
+const inputInvalid = itemForm.querySelector("#input-invalid");
 const itemList = document.querySelector("#item-list");
-const itemsClearBtn = document.querySelector("#items-clear");
-const filterInput = document.querySelector("#filter");
+const clearBtn = document.querySelector("#items-clear");
+const itemFilter = document.querySelector("#filter");
 const formBtn = itemForm.querySelector("button");
-let isEditModeActive = false;
-
-// console.log(formBtn);
-
+let isEditMode = false;
 //#endregion
 
-//#region : functions
-
-const checkUI = () => {
-  const items = itemList.querySelectorAll("li");
-
-  if (items.length === 0) {
-    filterInput.style.display = "none";
-    itemsClearBtn.style.display = "none";
-  } else {
-    filterInput.style.display = "block";
-    itemsClearBtn.style.display = "block";
-  }
-};
-
-const createIcon = (classes) => {
-  const icon = document.createElement("i");
-  icon.className = classes;
-
-  return icon;
-};
-
-const createItem = (classes, item) => {
-  const li = document.createElement("li");
-  li.className = classes;
-  li.textContent = item;
-
-  const icon = createIcon("bi bi-x fs-5 text-danger");
-
-  li.appendChild(icon);
-
-  return li;
-};
-
-const addItemToDOM = (item) => {
-  const li = createItem("list-item", item);
-  itemList.appendChild(li);
-};
-
-const getLocalStorageItems = () => {
-  let localStorageItems;
-
-  if (localStorage.getItem("items") === null) {
-    localStorageItems = [];
-  } else {
-    localStorageItems = JSON.parse(localStorage.getItem("items"));
-  }
-
-  return localStorageItems;
-};
-
-const addItemToLocalStorage = (item) => {
-  const localStorageItems = getLocalStorageItems();
-
-  localStorageItems.push(item);
-  localStorage.setItem("items", JSON.stringify(localStorageItems));
-};
-
-const displayItems = () => {
-  const localStorageItems = getLocalStorageItems();
-
-  localStorageItems.forEach((item) => {
-    addItemToDOM(item);
-  });
-
-  checkUI();
-};
-
-const checkIfItemExists = (item) => {
-  const localStorageItems = getLocalStorageItems();
-
-  return localStorageItems.includes(item);
-};
-
+//#region : add item to DOM & localStorage
 const addItem = (e) => {
   e.preventDefault();
 
   const newItem = itemInput.value;
 
-  //#region : validation
-
+  //#region : item input validation
   if (newItem === "") {
-    inputInvalid.innerText = "Fill the input field please!";
+    inputInvalid.textContent = "Please enter your item";
     return;
   } else {
-    inputInvalid.innerText = "";
+    inputInvalid.textContent = "";
   }
-
   //#endregion
 
-  //#region : edit mode
-
-  if (isEditModeActive) {
+  //#region : check if edit mode & no duplicate value
+  if (isEditMode) {
     const itemToEdit = itemList.querySelector(".edit-mode");
 
-    removeLocalStorageItem(itemToEdit.textContent);
+    removeItemFromLocalStorage(itemToEdit.textContent);
+
     itemToEdit.remove();
 
-    formBtn.innerHTML = "<i class='bi bi-plus'></i> Add Item";
+    formBtn.innerHTML = "<i class='bi bi-plus'></i> <span>Add Item</span>";
     formBtn.classList.replace("btn-primary", "btn-dark");
 
-    isEditModeActive = false;
-  }
-  //#endregion
-
-  //#region : prevent duplicate value
-
-  if (checkIfItemExists(newItem)) {
-    inputInvalid.innerText = "This item is already existed!";
-    return;
+    isEditMode = false;
   } else {
-    inputInvalid.innerText = "";
-  }
+    if (checkIfItemExists(newItem)) {
+      inputInvalid.textContent = "This item you entered is already existed!";
 
+      return;
+    } else {
+      inputInvalid.textContent = "";
+    }
+  }
   //#endregion
 
+  //#region : add item to DOM
   addItemToDOM(newItem);
+  //#endregion
 
+  //#region : add item to localStorage
   addItemToLocalStorage(newItem);
+  //#endregion
 
+  //#region : clear input
   itemInput.value = "";
+  //#endregion
 
   checkUI();
 };
 
-const removeLocalStorageItem = (item) => {
-  let localStorageItems = getLocalStorageItems();
+const addItemToDOM = (newItem) => {
+  const li = document.createElement("li");
+  li.className = "list-item";
 
-  localStorageItems = localStorageItems.filter((i) => i !== item);
+  const textNode = document.createTextNode(newItem);
 
-  localStorage.setItem("items", JSON.stringify(localStorageItems));
+  const icon = document.createElement("i");
+  icon.className = "bi bi-x fs-5 text-danger";
+
+  li.appendChild(textNode);
+  textNode.after(icon);
+  itemList.appendChild(li);
 };
 
-const removeItem = (item) => {
-  item.remove();
-  removeLocalStorageItem(item.textContent);
-  checkUI();
+const addItemToLocalStorage = (newItem) => {
+  let itemsFromLocalStorage;
+
+  if (localStorage.getItem("items") === null) {
+    itemsFromLocalStorage = [];
+  } else {
+    itemsFromLocalStorage = JSON.parse(localStorage.getItem("items"));
+  }
+
+  itemsFromLocalStorage.push(newItem);
+  localStorage.setItem("items", JSON.stringify(itemsFromLocalStorage));
 };
 
-const editItem = (item) => {
-  isEditModeActive = true;
+const checkIfItemExists = (item) => {
+  const itemsFromLocalStorage = getItemsFromLocalStorage();
 
-  itemInput.value = item.textContent;
+  return itemsFromLocalStorage.includes(item);
+};
 
-  itemList
-    .querySelectorAll("li")
-    .forEach((item) => item.classList.remove("edit-mode"));
+itemForm.addEventListener("submit", addItem);
+//#endregion
+
+//#region : remove/edit-mode for an item from DOM & localStorage
+const onClickItem = (e) => {
+  if (e.target.classList.contains("bi-x")) {
+    e.target.parentElement.remove();
+
+    removeItemFromLocalStorage(e.target.parentElement.textContent);
+
+    checkUI();
+  } else {
+    setItemToEditMode(e.target);
+  }
+};
+
+const removeItemFromLocalStorage = (item) => {
+  let itemsFromLocalStorage = getItemsFromLocalStorage();
+
+  itemsFromLocalStorage = itemsFromLocalStorage.filter((i) => i !== item);
+
+  localStorage.setItem("items", JSON.stringify(itemsFromLocalStorage));
+};
+
+const setItemToEditMode = (item) => {
+  isEditMode = true;
+
+  const items = itemList.querySelectorAll("li");
+  items.forEach((i) => i.classList.remove("edit-mode"));
 
   item.classList.add("edit-mode");
+  itemInput.value = item.textContent;
 
-  formBtn.innerHTML = '<i class="bi bi-pencil-fill"></i> Update Item';
-
+  formBtn.innerHTML =
+    "<i class='bi bi-pencil-fill'></i> <span>Update Item</span>";
   formBtn.classList.replace("btn-dark", "btn-primary");
 };
 
-const onClickItem = (e) => {
-  if (e.target.classList.contains("bi-x")) {
-    removeItem(e.target.parentElement);
-  } else {
-    editItem(e.target);
-  }
-};
+itemList.addEventListener("click", onClickItem);
+//#endregion
 
-const clearAllItems = () => {
+//#region : remove all items from DOM & localStorage
+const clearItems = () => {
   itemList.innerHTML = "";
+
   localStorage.removeItem("items");
+
   checkUI();
 };
 
-const filterItems = (e) => {
-  const filterText = e.target.value.toLowerCase();
+clearBtn.addEventListener("click", clearItems);
+//#endregion
+
+//#region : checkUI, show/hidden itemFilter & clearBtn
+const checkUI = () => {
   const items = itemList.querySelectorAll("li");
+
+  if (items.length === 0) {
+    clearBtn.style.display = "none";
+    itemFilter.style.display = "none";
+  } else {
+    clearBtn.style.display = "block";
+    itemFilter.style.display = "block";
+  }
+};
+
+checkUI();
+//#endregion
+
+//#region : filter items
+const filterItems = (e) => {
+  const items = itemList.querySelectorAll("li");
+  const text = e.target.value.toLowerCase();
 
   items.forEach((item) => {
     const itemName = item.firstChild.textContent.toLowerCase();
 
-    if (itemName.indexOf(filterText) !== -1) {
+    if (itemName.indexOf(text) !== -1) {
       item.style.display = "flex";
     } else {
       item.style.display = "none";
@@ -196,24 +180,31 @@ const filterItems = (e) => {
   });
 };
 
+itemFilter.addEventListener("input", filterItems);
 //#endregion
 
-//#region : events
+//#region : get items from localStorage
+const getItemsFromLocalStorage = () => {
+  let itemsFromLocalStorage;
 
-itemForm.addEventListener("submit", addItem);
+  if (localStorage.getItem("items") === null) {
+    itemsFromLocalStorage = [];
+  } else {
+    itemsFromLocalStorage = JSON.parse(localStorage.getItem("items"));
+  }
 
-itemList.addEventListener("click", onClickItem);
+  return itemsFromLocalStorage;
+};
+//#endregion
 
-itemsClearBtn.addEventListener("click", clearAllItems);
+//#region : display items from localStorage on DOM
+const displayItems = () => {
+  const itemsFromLocalStorage = getItemsFromLocalStorage();
 
-filterInput.addEventListener("input", filterItems);
+  itemsFromLocalStorage.forEach((item) => addItemToDOM(item));
+
+  checkUI();
+};
 
 document.addEventListener("DOMContentLoaded", displayItems);
-
-//#endregion
-
-//#region : global callings
-
-checkUI();
-
 //#endregion

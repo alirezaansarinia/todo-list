@@ -3,66 +3,83 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Todo List</title>
-    <link rel="stylesheet" href="./assets/css/bootstrap-icons.min.css" />
+    <title>Review - ToDo List</title>
+
+    <!-- #region: links -->
     <link rel="stylesheet" href="./assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./assets/css/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="./assets/css/style.css" />
+    <!-- #endregion -->
+
+    <!-- #region: scripts -->
+    <script src="./assets/js/script.js" defer></script>
+    <!-- #endregion -->
   </head>
   <body>
     <div class="container">
       <div class="row justify-content-center mt-4">
-        <div class="col-10 col-md-6">
+        <div class="col-md-6">
           <!-- #region: header -->
-          <header class="d-flex align-items-center">
+          <header class="d-flex gap-2 align-items-center mb-4">
+            <!-- #region: title -->
             <i class="bi bi-calendar-check fs-3"></i>
-
-            <h3 class="text-secondary ms-2 mb-0">Todo List</h3>
+            <h1 class="text-secondary fs-3 mb-0">Todo List</h1>
+            <!-- #endregion -->
           </header>
           <!-- #endregion -->
 
-          <!-- #region: form -->
-          <form id="item-form" class="my-4">
-            <div class="mb-3">
-              <label for="item-input" class="form-label">Enter Item</label>
+          <!-- #region: main -->
+          <main>
+            <!-- #region: todo-form -->
+            <section class="mb-4">
+              <form id="item-form">
+                <label for="input-item" class="form-label">Enter Item:</label>
+                <input type="text" id="item-input" class="form-control" />
+                <div
+                  class="form-text text-danger mb-3"
+                  id="input-invalid"
+                ></div>
 
-              <input type="text" id="item-input" class="form-control" />
+                <button type="submit" class="btn btn-sm btn-dark">
+                  <i class="bi bi-plus"></i>
+                  <span>Add Item</span>
+                </button>
+              </form>
+            </section>
+            <!-- #endregion-->
 
-              <div id="input-invalid" class="form-text text-danger"></div>
-            </div>
+            <!-- #region: filter-item -->
+            <section>
+              <input
+                type="text"
+                id="filter"
+                placeholder="filter item"
+                class="form-control form-control-sm"
+              />
+            </section>
+            <!-- #endregion -->
 
-            <button type="submit" class="btn btn-sm btn-dark">
-              <i class="bi bi-plus"></i>
-              Add Item
-            </button>
-          </form>
-          <!-- #endregion -->
+            <!-- #region: list-items -->
+            <section>
+              <ul id="item-list" class="my-4 p-0"></ul>
+            </section>
+            <!-- #endregion -->
 
-          <!-- #region: filter -->
-          <div>
-            <input
-              type="text"
-              id="filter"
-              class="form-control form-control-sm"
-              placeholder="Filter Items"
-            />
-          </div>
-          <!-- #endregion -->
-
-          <!-- #region: item-list -->
-          <ul id="item-list" class="my-4 p-0"></ul>
-          <!-- #endregion -->
-
-          <!-- #region: clear all -->
-          <div class="d-grid">
-            <button type="button" id="items-clear" class="btn btn-outline-dark">
-              Clear All
-            </button>
-          </div>
+            <!-- #region: clear-all -->
+            <section class="d-grid">
+              <button
+                type="button"
+                id="items-clear"
+                class="btn btn-outline-dark"
+              >
+                Clear All
+              </button>
+            </section>
+            <!-- #endregion -->
+          </main>
           <!-- #endregion -->
         </div>
       </div>
     </div>
-
-    <script src="./assets/js/script.js"></script>
   </body>
 </html>
